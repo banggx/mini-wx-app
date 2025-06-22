@@ -1,7 +1,17 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { Application } from './native/application';
+import { AppManager } from './native/AppManager';
 import { apps } from '@/constants/app';
 
-const openMiniApp = (app: any) => {}
+const miniWindow = ref<HTMLDivElement>();
+let wx: Application;
+onMounted(() => {
+  wx = new Application(miniWindow.value as HTMLElement);
+})
+const openMiniApp = (app: any) => {
+  AppManager.openApp(app, wx);
+}
 </script>
 
 <template>
@@ -16,4 +26,7 @@ const openMiniApp = (app: any) => {}
       <span class="text-base">{{ app.name }}</span>
     </div>
   </main>
+  <Teleport to="body">
+    <div class="mini-body absolute top-0 left-0 z-10" ref="miniWindow"></div>
+  </Teleport>
 </template>
