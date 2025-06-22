@@ -1,0 +1,15 @@
+export const webviewTpl = `<div class="wx-native-webview">
+	<!-- 导航区域 -->
+	<div class="wx-native-webview__navigation">
+		<div class="wx-native-webview__navigation-content">
+			<div class="wx-native-webview__navigation-left-btn"></div>
+			<h2 class="wx-native-webview__navigation-title"></h2>
+		</div>
+	</div>
+	<!-- iframe -->
+	<div class="wx-native-webview__body">
+		<div class="wx-native-webview__root">
+			<iframe class="wx-native-webview__window" src="/miniApp.html" frameborder="0"></iframe>
+		</div>
+	</div>
+</div>`;

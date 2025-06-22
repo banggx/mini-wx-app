@@ -24,29 +24,49 @@
 .wx-mini-app-navigation__actions {
 	position: absolute;
 	right: 14px * @proportion;
+	top: 12px * @proportion;
 	border-radius: 32px * @proportion;
 	width: 166px * @proportion;
 	box-sizing: border-box;
 	height: 64px * @proportion;
-	top: 14px * @proportion;
 	display: flex;
 	flex-direction: row;
 	overflow: hidden;
 	z-index: 10;
-  background-color: rgba(255, 255, 255, .8);
-  border: 1px solid rgba(234, 234, 234, .8);
+	
+  &.wx-mini-app-navigation__actions--black {
+		background-color: rgba(255, 255, 255, .8);
+		border: 1px solid rgba(234, 234, 234, .8);
 
-  .wx-mini-app-navigation__actions-variable {
-    background-image: url('@/assets/images/mini-action.png');
+		.wx-mini-app-navigation__actions-variable {
+			background-image: url('@/assets/images/mini-action.png');
 
-    &::after {
-      background-color: #ccc;
-    }
-  }
+			&::after {
+				background-color: #ccc;
+			}
+		}
 
-  .wx-mini-app-navigation__actions-close {
-    background-image: url('@/assets/images/mini-close.png');
-  }
+		.wx-mini-app-navigation__actions-close {
+			background-image: url('@/assets/images/mini-close.png');
+		}
+	}
+
+	&.wx-mini-app-navigation__actions--white {
+		background-color: rgba(0, 0, 0, .2);
+		border: 1px solid rgba(234, 234, 234, .8);
+
+		.wx-mini-app-navigation__actions-variable {
+			background-image: url('@/assets/images/mini-action-white.png');
+
+			&::after {
+				background-color: #ccc;
+			}
+		}
+
+		.wx-mini-app-navigation__actions-close {
+			background-image: url('@/assets/images/mini-close-white.png');
+		}
+	}
 
 	li {
 		list-style: none;

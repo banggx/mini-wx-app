@@ -4,7 +4,7 @@ export const miniAppTpl = `<div class="wx-mini-app">
         <li class="wx-mini-app-navigation__actions-variable"></li>
         <li class="wx-mini-app-navigation__actions-close"></li>
     </ul>
-
+    
     <!-- webview挂载节点 -->
     <div class="wx-mini-app__webviews"></div>
 
