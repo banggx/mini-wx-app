@@ -5,9 +5,9 @@ const openMiniApp = (app: any) => {}
 </script>
 
 <template>
-  <main class="container w-screen h-screen bg-gray-100 p-6 box-border overflow-x-hidden">
+  <main class="container w-screen h-screen bg-gray-100 p-6 box-border overflow-x-hidden flex flex-col gap-6">
     <div
-      class="app-item flex items-center gap-4 px-4 py-2 rounded-md bg-white shadow-md hover:bg-gray-200 overflow-hidden"
+      class="app-item flex items-center gap-4 px-4 py-2 rounded-md bg-white shadow-md cursor-pointer hover:bg-gray-200 overflow-hidden"
       v-for="app in apps" 
       :key="app.appId"
       @click="openMiniApp(app)"
