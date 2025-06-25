@@ -67,7 +67,7 @@ export class Webview {
     };
   }
 
-  postMessage(message: IMessage) {
+  postMessage(_: IMessage) {
     const iframeWindow = (window.frames as any)[this.iframe.name];
     if (iframeWindow) {
       // todo: 发送消息给ui线程
