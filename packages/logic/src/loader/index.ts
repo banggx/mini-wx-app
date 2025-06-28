@@ -27,7 +27,8 @@ class Loader {
   loadResources(opts: LoaderResourceOpts) {
     const { appId, pages } = opts;
     // 拼接模版资源loader路径
-    const logicResourcePath = `${appId}/logic.js`;
+    const logicResourcePath = `http://localhost:1420/${appId}/logic.js`;
+    fetch(logicResourcePath).then(res => res.text()).then(console.log);
     globalThis.importScripts(logicResourcePath);
     globalThis.modRequire('app'); // 加载小程序App模块
     pages.forEach(pathPath => {

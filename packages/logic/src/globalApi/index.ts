@@ -1,4 +1,4 @@
-import { modDefine, modRequire } from './amd';
+import { modDefine, modRequire } from 'shared';
 import loader from '@/loader';
 import type { AppModuleInfo, PageModuleInfo, PageModuleCompileInfo } from '@/types/common';
 

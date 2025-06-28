@@ -1,7 +1,7 @@
 /**
  * 处理线程间函数无法传递的问题，把函数包装成一个对象，通过一个id标识，回调时通过id匹配执行
  */
-import { uuid } from '@/utils';
+import { uuid } from 'shared';
 
 type AnyFunc = (...args: any[]) => any;
 class Callback {

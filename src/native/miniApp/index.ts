@@ -55,7 +55,7 @@ export class MiniApp {
 
   async init() {
     // 初始化小程序逻辑执行线程
-    this.jscore?.init();
+    await this.jscore?.init();
 
     // 创建 js bridge，构建起 logic worker -> ui worker 通信
     const entryPageBridge = await this.createBridge({
@@ -75,6 +75,17 @@ export class MiniApp {
       }
     });
     this.bridgeList.push(entryPageBridge);
+
+    this.jscore.postMessage({
+      type: 'loadResource',
+      body: {
+        appId: 'meituan',
+        bridgeId: entryPageBridge.id,
+        pages: [
+          'pages/home/index'
+        ]
+      }
+    })
 
     this.hideLaunchScreen();
   }

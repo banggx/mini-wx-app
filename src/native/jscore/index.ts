@@ -1,5 +1,4 @@
 import mitt, { Emitter } from 'mitt';
-import workerJs from './worker.js?raw'
 import type { MiniApp } from "@native/miniApp";
 import type { IMessage } from "@native/types/common";
 
@@ -32,7 +31,9 @@ export class JSCore {
   }
 
   async init() {
-    const jsBlob = new Blob([workerJs], { type: 'text/javascript' });
+    const jsContent = await fetch('/core.js');
+    const codeString = await jsContent.text();
+    const jsBlob = new Blob([codeString], { type: 'text/javascript' });
     const urlObj = URL.createObjectURL(jsBlob);
     this.worker = new Worker(urlObj);
     this.worker.addEventListener('message', (e) => {
