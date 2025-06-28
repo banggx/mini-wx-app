@@ -1,0 +1,40 @@
+/**
+ * Messgae Class
+ * ui线程的通信模块
+ * 
+ * field: 消息类型
+ * event: 事件对象
+ * 
+ * - init(): void; 初始化消息类
+ * - receive(messageType, handler): void 接收原生层消息
+ * - send(data): void 发送消息到原生层
+ */
+import mitt, { Emitter } from 'mitt';
+import type { IMessage } from '@/types/common';
+
+export class Messgae {
+  event: Emitter<Record<string, any>>;
+  constructor() {
+    this.event = mitt<Record<string, any>>();
+    this.init();
+  }
+
+  init() {
+    // native 层直接调用这个api来触发事件通知
+    window.JSBridge.onReceiveNativeMessage = (msg: IMessage) => {
+      const { type, body } = msg;
+      this.event.emit(type, body);
+    }
+  }
+
+  receive(type: string, callback: (data: any) => void) {
+    this.event.on(type, callback);
+  }
+
+  send(message: IMessage) {
+    // native 侧直接监听这个api来收取ui层的消息
+    window.JSBridge.onReceiveUIMessage?.(message);
+  }
+}
+
+export default new Messgae();
