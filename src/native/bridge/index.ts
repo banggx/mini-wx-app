@@ -28,6 +28,11 @@ export class Bridge {
 
   opts: BridgeParams;
 
+  /**
+   * 记录bridge加载状态
+   */
+  status: number = 0;
+
   constructor(opts: BridgeParams) {
     this.id = `bridge_${uuid()}`;
     this.opts = opts;
@@ -37,10 +42,48 @@ export class Bridge {
 
   jscoreMessageHandler(message: IMessage) {
     console.log('接收到来自于逻辑线程的消息: ', message);
+    const { type, body } = message;
+    // 判断 bridgeId 是否对应
+    if (body.bridgeId !== this.id) return;
+    switch (type) {
+      case 'logicResourceLoaded':
+        this.status++;
+        this.createApp(); // 逻辑线程和UI准备好之后就可以开始创建App了
+        break;
+      case 'appIsCreated':
+        this.status++;
+        this.notifyMakeInitialData(); // 通知逻辑线程初始化小程序渲染数据
+        break;
+      case 'initialDataReady':
+        this.status++;
+        this.setInitialData(body); // 把逻辑线程的初始化数据设置给UI线程，UI线程开始渲染页面
+        break;
+      case 'updateModule':
+        this.updateModule(body); // 逻辑线程调用setData 更新数据，通知UI渲染
+    }
   }
 
   uiMessageHandler(message: IMessage) {
     console.log('接收到来自UI线程的消息: ', message);
+    const { type, body } = message;
+    switch (type) {
+      case 'uiResourceLoaded':
+        this.status++;
+        this.createApp();
+        break;
+      case 'moduleCreated':
+        this.uiInstanceCreated(body);
+        break;
+      case 'moduleMounted':
+        this.uiInstanceMounted(body);
+        break;
+      case 'pageScroll':
+        this.pageScroll(body);
+        break;
+      case 'triggerEvent':
+        this.triggerEvent(body);
+        break;
+    }
   }
 
   async init() {
@@ -64,5 +107,127 @@ export class Bridge {
       // 将webview添加到miniApp的webview容器节点中
       this.parent?.webviewContainer?.appendChild(webview.el);
     });
-  }  
+  }
+
+  /**
+   * bridge 通知逻辑线程和UI线程加载小程序资源
+   */
+  start(loadLogicSource = true) {
+    // 通知UI线程加载资源
+    this.webview?.postMessage({
+      type: 'loadResource',
+      body: {
+        appId: this.opts.appId,
+        pagePath: this.opts.pagePath,
+      }
+    });
+    
+    // 初始化触发一次小程序逻辑资源加载
+    if (loadLogicSource) {
+      this.jscore.postMessage({
+        type: 'loadResource',
+        body: {
+          appId: this.opts.appId,
+          bridgeId: this.id,
+          pages: this.opts.pages,
+        }
+      });
+    } else {
+      this.status++;
+    }
+  }
+
+  // 通知逻辑线程创建小程序App实例
+  createApp() {
+    // 只有logic和ui线程的loadResource 都完毕后，才能开始创建，此时status会变成2
+    if (this.status !== 2) return;
+    console.log('create app start.');
+
+    this.jscore.postMessage({
+      type: 'createApp',
+      body: {
+        bridgeId: this.id,
+        scene: this.opts.scene,
+        pagePath: this.opts.pagePath,
+        query: this.opts.query,
+      }
+    });
+  }
+
+  notifyMakeInitialData() {
+    this.jscore.postMessage({
+      type: 'makePageInitialData',
+      body: {
+        bridgeId: this.id,
+        pagePath: this.opts.pagePath,
+      }
+    });
+  }
+
+  setInitialData(data) {
+    const { initialData } = data;
+    this.webview?.postMessage({
+      type: 'setInitialData',
+      body: {
+        initialData,
+        bridgeId: this.id,
+        pagePath: this.opts.pagePath,
+      }
+    });
+  }
+
+  updateModule(payload) {
+    const { id, data } = payload;
+    this.webview?.postMessage({
+      type: 'updateModule',
+      body: {
+        id,
+        data,
+      }
+    })
+  }
+
+  uiInstanceCreated(payload) {
+    const { path, id } = payload;
+    this.jscore.postMessage({
+      type: 'createInstance',
+      body: {
+        id,
+        path,
+        bridgeId: this.id,
+        query: this.opts.query,
+      }
+    });
+  }
+
+  uiInstanceMounted(payload) {
+    const { id } = payload;
+    this.jscore.postMessage({
+      type: 'moduleMounted',
+      body: { id }
+    });
+  }
+
+  pageScroll(payload) {
+    const { id, scrollTop } = payload;
+    this.jscore.postMessage({
+      type: 'pageScroll',
+      body: {
+        id,
+        scrollTop,
+      }
+    });
+  }
+
+  triggerEvent(payload) {
+    const { id, methodName, paramsList } = payload;
+    this.jscore.postMessage({
+      type: 'triggerEvent',
+      body: {
+        id,
+        methodName,
+        paramsList
+      }
+    })
+  }
 }

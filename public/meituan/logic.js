@@ -16,7 +16,7 @@ modDefine('pages/home/index', function (require, module, exports) {
     },
     tapHandler() {
       this.setData({
-        number: this.number + 10
+        number: this.data.number + 10
       })
     }
   }, {

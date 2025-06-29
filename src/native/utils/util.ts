@@ -1,5 +1,5 @@
 export function queryPath(path: string) {
-  const [pagePath, paramsStr] = path.split('?')[1];
+  const [pagePath, paramsStr] = path.split('?');
   const result: Record<string, any> = {
     query: {},
     pagePath,

@@ -2,6 +2,7 @@ import { AppManager } from '@native/AppManager';
 import { miniAppTpl } from './tpl';
 import { JSCore } from '@native/jscore';
 import { Bridge } from '@native/bridge';
+import { mergePageConfig } from './utils';
 import type { Application } from '@native/application';
 import type { BridgeParams, OpenMiniAppOpts } from '@native/types/common';
 
@@ -14,6 +15,10 @@ export class MiniApp {
   parent: Application | null = null;
   /* 小程序页面根节点 */
   el: HTMLElement;
+  /**
+   * 小程序 app 配置
+   */
+  appConfig: Record<string, any> | null = null;
   /* 小程序webview的挂载节点 */
   webviewContainer: HTMLElement | null = null;
   /**
@@ -55,37 +60,30 @@ export class MiniApp {
 
   async init() {
     // 初始化小程序逻辑执行线程
-    await this.jscore?.init();
+    this.jscore?.init();
+
+    // 模拟读取小程序配置文件信息
+    const configPath = `/${this.app.appId}/config.json`;
+    const res = await fetch(configPath).then(res => res.text());
+    this.appConfig = JSON.parse(res);
 
     // 创建 js bridge，构建起 logic worker -> ui worker 通信
+    const entryPagePath = this.app.path || this.appConfig!.app.entryPagePath;
+    const pageConfig = this.appConfig!.modules?.[entryPagePath];
     const entryPageBridge = await this.createBridge({
       jscore: this.jscore,
       isRoot: true,
       appId: this.app.appId,
       pagePath: this.app.path,
-      pages: [],
+      pages: this.appConfig!.app?.pages,
       query: this.app.query,
       scene: this.app.scene,
-      configInfo: { // 暂时模拟一下美团小程序的页面配置参数
-        "navigationBarBackgroundColor": "#ffd200",
-        "navigationBarTextStyle": "black",
-        "navigationBarTitleText": "美团",
-        "backgroundColor": "#fff",
-        "usingComponents": {}
-      }
+      configInfo: mergePageConfig(this.appConfig!.app, pageConfig),
     });
     this.bridgeList.push(entryPageBridge);
 
-    this.jscore.postMessage({
-      type: 'loadResource',
-      body: {
-        appId: 'meituan',
-        bridgeId: entryPageBridge.id,
-        pages: [
-          'pages/home/index'
-        ]
-      }
-    })
+    // 开始出发小程序应用初始化
+    entryPageBridge.start();
 
     this.hideLaunchScreen();
   }
@@ -94,7 +92,7 @@ export class MiniApp {
     const bridge = new Bridge(opts);
     bridge.parent = this;
     // 初始化bridge
-    bridge.init();
+    await bridge.init();
     return bridge;
   }
 

@@ -49,6 +49,10 @@ export class Webview {
   async init(callback: () => void) {
     // 等待frame 加载完成
     await this.frameLoaded();
+    const iframeWindow = window.frames[this.iframe.name];
+    iframeWindow.JSBridge.onReceiveUIMessage = (message: IMessage) => {
+      this.event.emit('message', message);
+    }
     callback && callback();
   }
 
@@ -67,10 +71,11 @@ export class Webview {
     };
   }
 
-  postMessage(_: IMessage) {
+  postMessage(message: IMessage) {
     const iframeWindow = (window.frames as any)[this.iframe.name];
+    console.log(iframeWindow)
     if (iframeWindow) {
-      // todo: 发送消息给ui线程
+      iframeWindow.JSBridge.onReceiveNativeMessage(message);
     }
   }
 
