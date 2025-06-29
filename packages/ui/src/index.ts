@@ -1,3 +1,4 @@
+import './namespace';
 import globalApi from './globalApi';
 import messageManager from './messageManager';
 

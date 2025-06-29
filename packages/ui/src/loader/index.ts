@@ -34,7 +34,7 @@ class Loader {
       link.href = path;
       link.onload = () => resolve();
     
-      document.body.appendChild(link);
+      document.head.appendChild(link);
     })
   }
 
