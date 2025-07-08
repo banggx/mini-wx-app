@@ -1,0 +1,20 @@
+{
+  "name": "components",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vitejs/plugin-vue2": "^2.3.3",
+    "vite-plugin-css-injected-by-js": "^3.5.2"
+  },
+  "dependencies": {
+    "swiper": "^11.2.10",
+    "vue": "~2.7.16"
+  }
+}

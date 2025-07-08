@@ -4,7 +4,8 @@
  * 
  * page: Vue页面实例
  * pageId: 页面实例ID
- * firstRender(): void; 首次渲染
+ * startRender(): void; 渲染
+ * updateModule(opts): void; 更新模块数据
  */
 import loader from '@/loader';
 import message from '@/message';
