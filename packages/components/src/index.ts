@@ -4,6 +4,7 @@ import Text from './components/text/index.vue';
 import Video from './components/video/index.vue';
 import Swiper from './components/swiper/index.vue';
 import SwiperItem from './components/swiper-item/index.vue';
+import './api';
 
 const components = {
   'ui-view': View,
