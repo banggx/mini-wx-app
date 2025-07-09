@@ -1,31 +1,67 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: #f8f8f8;
-  width: 100vw;
-  height: 100vh;
+	background-color: #ddd;
+}
+.home-title[data-v-er7AkF2xUN] {
+	height: 100rem;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: flex;
+	background-color: #eff0f2;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	   -moz-box-pack: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	   -moz-box-align: center;
+	        align-items: center;
+	margin-bottom: 50rem;
+	font-size: 33rem;
 }
 
-.container h1 {
-  font-size: 24px;
-  color: #333;
-  font-weight: bold;
-  margin-bottom: 16px;
+.home-go-detail[data-v-er7AkF2xUN] {
+	height: 100rem;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: flex;
+	background-color: #eff0f2;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	   -moz-box-pack: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	   -moz-box-align: center;
+	        align-items: center;
+	font-size: 33rem;
 }
 
-.container .num {
-  font-size: 32px;
-  color: #333;
-  margin-bottom: 16px;
+.user-photo-img[data-v-er7AkF2xUN] {
+	width: 200rem;
+	height: 200rem;
 }
 
-.container button {
-  width: 100px;
-  height: 40px;
-  border-radius: 6px;
-  border: none;
-  background: #007aff;
-  color: #fff;
+.sub-title[data-v-er7AkF2xUN] {
+	font-size: 40rem;
 }
+
+.button[data-v-OQv0RlAB0C] {
+	height: 100rem;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: flex;
+	background-color: #eff0f2;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	   -moz-box-pack: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	   -moz-box-align: center;
+	        align-items: center;
+	font-size: 33rem;
+}
+

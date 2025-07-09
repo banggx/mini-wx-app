@@ -10,6 +10,7 @@ Page({
       }
     },
     number: 10,
+    str: "hello world"
   },
   onLoad: function(options) {
     // 页面创建时执行

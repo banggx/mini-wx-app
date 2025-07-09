@@ -4,7 +4,8 @@ import { JSCore } from '@native/jscore';
 import { Bridge } from '@native/bridge';
 import { mergePageConfig } from './utils';
 import type { Application } from '@native/application';
-import type { BridgeParams, OpenMiniAppOpts } from '@native/types/common';
+import type { BridgeParams, IMessage, NavigateToParams, OpenMiniAppOpts, OpenPageParams } from '@native/types/common';
+import { queryPath, sleep } from '../utils/util';
 
 export class MiniApp {
   /* 小程序appId */
@@ -21,6 +22,10 @@ export class MiniApp {
   appConfig: Record<string, any> | null = null;
   /* 小程序webview的挂载节点 */
   webviewContainer: HTMLElement | null = null;
+  /**
+   * webview 页面切换动画是否结束
+   */
+  webviewAnimaEnd: boolean = true;
   /**
    * 当前小程序的 jscore 实例
    * 
@@ -43,6 +48,8 @@ export class MiniApp {
     // 创建小程序页面的根节点
     this.el = document.createElement('div');
     this.el.classList.add('wx-native-view');
+    // 注册jscore消息监听，处理小程序全局事件
+    this.jscore.addEventListener('message', this.jscoreMessageHandler.bind(this));
   }
   
   /* 初始化小程序页面 */
@@ -143,5 +150,89 @@ export class MiniApp {
     closeBtn.onclick = () => {
       AppManager.closeApp(this);
     };
+  }
+
+  jscoreMessageHandler(msg: IMessage) {
+    const { type, body } = msg;
+
+    if (type !== 'triggerWXApi') {
+      return;
+    }
+    const { apiName, params } = body;
+    this[apiName]?.(params);
+  }
+  // 通知回logic侧触发回调
+  createCallback(callbackId: string) {
+    const self = this;
+    return function(...args: any) {
+      self.jscore.postMessage({
+        type: 'triggerCallback',
+        body: {
+          callbackId,
+          args
+        }
+      })
+    }
+  }
+
+  navigateTo(params: NavigateToParams) {
+    const { url, success } = params;
+    const { pagePath, query } = queryPath(url);
+    const successCallback = success ? this.createCallback(success) : undefined;
+    
+    this.openPage({
+      pagePath: pagePath.replace(/^\//g, ''),
+      query,
+      onSuccess: successCallback
+    });
+  }
+
+  async openPage(opts: OpenPageParams) {
+    if (!this.webviewAnimaEnd) {
+      return;
+    }
+    this.webviewAnimaEnd = false;
+    const { pagePath, query, onSuccess } = opts;
+
+    // 创建新的bridge
+    const pageConfig = this.appConfig!.modules[pagePath];
+    const bridge = await this.createBridge({
+      pagePath,
+      query,
+      scene: this.app.scene,
+      jscore: this.jscore,
+      isRoot: false,
+      appId: this.app.appId,
+      pages: this.appConfig!.app.pages,
+      configInfo: mergePageConfig(this.appConfig!.app, pageConfig),
+    });
+    // 获取前一个bridge，以及其webview
+    const preBridge = this.bridgeList[this.bridgeList.length - 1];
+    const preWebview = preBridge.webview!;
+    this.bridgeList.push(bridge);
+    this.bridges[bridge.id] = bridge;
+
+    // 触发bridge的初始化逻辑，此时不需要在初始化 worker
+    bridge.start(false);
+    
+  // 上一个页面推出
+    preWebview.el.classList.remove('wx-native-view--instage');
+		preWebview.el.classList.add('wx-native-view--slide-out');
+		preWebview.el.classList.add('wx-native-view--linear-anima');
+    preBridge.pageHide?.();
+
+    // 新页面推入
+    bridge.webview!.el.style.zIndex = `${this.bridgeList.length + 1}`;
+		bridge.webview!.el.classList.add('wx-native-view--enter-anima');
+		bridge.webview!.el.classList.add('wx-native-view--instage');
+    await sleep(540);
+
+    // 移除相关动画
+    this.webviewAnimaEnd = true;
+    preWebview.el.classList.remove('wx-native-view--linear-anima');
+		bridge.webview!.el.classList.remove('wx-native-view--before-enter');
+		bridge.webview!.el.classList.remove('wx-native-view--enter-anima');
+		bridge.webview!.el.classList.remove('wx-native-view--instage');
+    onSuccess && onSuccess();
   }
 }

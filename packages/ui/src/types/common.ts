@@ -8,7 +8,7 @@ export interface UIPageModuleInfo {
   path: string;
   render: (data: Record<string, any>) => string;
   usingComponents?: Record<string, string>;
-  scopeId?: string;
+  scopedId?: string;
 }
 
 export interface UIRenderOpts {

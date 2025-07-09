@@ -1,5 +1,6 @@
 import { modDefine, modRequire } from 'shared';
 import loader from '@/loader';
+import wx from '@/wx';
 import type { AppModuleInfo, PageModuleInfo, PageModuleCompileInfo } from '@/types/common';
 
 class GlobalApi {
@@ -14,6 +15,7 @@ class GlobalApi {
 
     globalThis.modDefine = modDefine;
     globalThis.modRequire = modRequire; 
+    globalThis.wx = wx;
   }
 }
 

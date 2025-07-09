@@ -219,6 +219,54 @@ export class Bridge {
     });
   }
 
+  appShow() {
+    if (this.status < 2) {
+      return;
+    }
+    // 向逻辑线程发送app显示的消息
+    this.jscore.postMessage({
+      type: 'appShow',
+      body: {}
+    });
+  }
+
+  appHide() {
+    if (this.status < 2) {
+      return;
+    }
+    // 向逻辑线程发送app显示的消息
+    this.jscore.postMessage({
+      type: 'appHide',
+      body: {}
+    });
+  }
+
+  pageShow() {
+    if (this.status < 2) {
+      return;
+    }
+    // 向逻辑线程发送app显示的消息
+    this.jscore.postMessage({
+      type: 'pageShow',
+      body: {
+        bridgeId: this.id,
+      }
+    });
+  }
+
+  pageHide() {
+    if (this.status < 2) {
+      return;
+    }
+    // 向逻辑线程发送app显示的消息
+    this.jscore.postMessage({
+      type: 'pageHide',
+      body: {
+        bridgeId: this.id,
+      } 
+    });
+  }
+
   triggerEvent(payload) {
     const { id, methodName, paramsList } = payload;
     this.jscore.postMessage({

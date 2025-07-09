@@ -37,3 +37,19 @@ export interface IMessage {
   type: string;
   body: any;
 }
+
+export interface NavigateToParams {
+  url: string;
+  success?: string;
+}
+
+export interface OpenPageParams {
+  pagePath: string;
+  query?: Record<string, any>;
+  onSuccess?: (...args: any[]) => void;
+}
+
+export interface OpenMiniProgram {
+  appId: string;
+  path: string;
+}

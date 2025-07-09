@@ -2,7 +2,8 @@
   "app": {
     "entryPagePath": "pages/home/index",
     "pages": [
-      "pages/home/index"
+      "pages/home/index",
+      "pages/detail/index"
     ],
     "window": {
       "navigationBarBackgroundColor": "#ffffff",
@@ -19,6 +20,13 @@
       "navigationBarBackgroundColor": "#ffd200",
       "navigationBarTextStyle": "black",
       "navigationBarTitleText": "美团",
+      "backgroundColor": "#fff",
+      "usingComponents": {}
+    },
+    "pages/detail/index": {
+      "navigationBarBackgroundColor": "#ffd200",
+      "navigationBarTextStyle": "black",
+      "navigationBarTitleText": "店铺详情页",
       "backgroundColor": "#fff",
       "usingComponents": {}
     }

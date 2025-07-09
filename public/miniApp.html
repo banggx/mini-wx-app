@@ -5,10 +5,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>pageFrame</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-  <script src="/ui.js"></script>
   <script src="/components.js"></script>
+  <script src="/ui.js"></script>
   <script type="text/javascript">
-    console.log('小程序ui线程渲染完成')
+   // 适配 rpx 单位: rem
+   const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+   const rootFontSize = viewportWidth / 750;
+   const rootTag = document.querySelector('html');
+   rootTag.style.fontSize = rootFontSize + 'px';
   </script>
 	<style>
 		* {
@@ -66,8 +70,6 @@
 	</style>
 </head>
 <body>
-	<div id="root">
-    <h1>小程序</h1>
-  </div>
+	<div id="root"></div>
 </body>
 </html>
