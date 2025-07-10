@@ -103,7 +103,20 @@ export class MiniApp {
     return bridge;
   }
 
-  
+  onPresentIn() {
+    // 触发当前页面的 onShow
+    const currentBridge = this.bridgeList[this.bridgeList.length - 1];
+    currentBridge && currentBridge.appShow();
+    currentBridge && currentBridge.pageShow();
+  }
+
+  onPresentOut() {
+    // 触发当前页面的onHide
+    const currentBridge = this.bridgeList[this.bridgeList.length - 1];
+    currentBridge && currentBridge.appHide();
+    currentBridge && currentBridge.pageHide();
+  }
+
   initMiniAppFrame() {
     this.el.innerHTML = miniAppTpl;
   }
@@ -187,6 +200,34 @@ export class MiniApp {
     });
   }
 
+  async navigateBack() {
+    if (this.bridgeList.length < 2 || !this.webviewAnimaEnd) return;
+
+    this.webviewAnimaEnd = false;
+    const currentBridge = this.bridgeList.pop()!;
+    const preBridge = this.bridgeList[this.bridgeList.length - 1];
+    
+    // 当前页面推出
+    currentBridge.webview!.el.classList.add('wx-native-view--before-enter');
+		currentBridge.webview!.el.classList.add('wx-native-view--enter-anima');
+    // 触发当前页面的destory
+    currentBridge.destroy();
+    
+    // 上一个页面推入
+    preBridge.webview!.el.classList.remove('wx-native-view--slide-out');
+		preBridge.webview!.el.classList.add('wx-native-view--instage');
+		preBridge.webview!.el.classList.add('wx-native-view--enter-anima');
+    // 触发上一个页面的生命周期函数
+		preBridge.pageShow && preBridge.pageShow();
+    await sleep(540);
+		this.webviewAnimaEnd = true;
+
+    // 页面进入后移除动画相关class
+		preBridge.webview!.el.classList.remove('wx-native-view--enter-anima');
+		preBridge.webview!.el.classList.remove('wx-native-view--instage');
+		currentBridge.webview!.el.parentNode?.removeChild(currentBridge.webview!.el);
+  }
+
   async openPage(opts: OpenPageParams) {
     if (!this.webviewAnimaEnd) {
       return;
@@ -214,17 +255,19 @@ export class MiniApp {
 
     // 触发bridge的初始化逻辑，此时不需要在初始化 worker
     bridge.start(false);
-    
-  // 上一个页面推出
-    preWebview.el.classList.remove('wx-native-view--instage');
-		preWebview.el.classList.add('wx-native-view--slide-out');
-		preWebview.el.classList.add('wx-native-view--linear-anima');
-    preBridge.pageHide?.();
 
-    // 新页面推入
     bridge.webview!.el.style.zIndex = `${this.bridgeList.length + 1}`;
-		bridge.webview!.el.classList.add('wx-native-view--enter-anima');
+    bridge.webview?.el.classList.add('wx-native-view--before-enter');
+    await sleep(20);
+    
+    // 上一个页面推出
+    preWebview.el.classList.remove('wx-native-view--instage');
+		preWebview.el.classList.add('wx-native-view--linear-anima');
+		preWebview.el.classList.add('wx-native-view--slide-out');
+    preBridge.pageHide?.();
+    // 新页面推入
 		bridge.webview!.el.classList.add('wx-native-view--instage');
+		bridge.webview!.el.classList.add('wx-native-view--enter-anima');
     await sleep(540);
 
     // 移除相关动画
@@ -232,7 +275,7 @@ export class MiniApp {
     preWebview.el.classList.remove('wx-native-view--linear-anima');
 		bridge.webview!.el.classList.remove('wx-native-view--before-enter');
 		bridge.webview!.el.classList.remove('wx-native-view--enter-anima');
-		bridge.webview!.el.classList.remove('wx-native-view--instage');
+		bridge.webview!.el.classList.add('wx-native-view--instage');
     onSuccess && onSuccess();
   }
 }

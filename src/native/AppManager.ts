@@ -19,17 +19,33 @@ export class AppManager {
     const { pagePath, query } = queryPath(path);
     // 2. 通过接口获取小程序的详细信息
     const { appName, logo } = await getMiniAppInfo(appId);
-    // 3. 创建小程序App实例
-    const miniApp = new MiniApp({
-      appId,
-      scene,
-      logo,
-      query,
-      path: pagePath,
-      name: appName,
-    });
-    this.appStack.push(miniApp);
-    wx.presentView(miniApp);
+
+    const cacheApp = this.getAppById(appId);
+    if (cacheApp) {
+      wx.presentView(cacheApp, true);
+    } else {
+      // 3. 创建小程序App实例
+      const miniApp = new MiniApp({
+        appId,
+        scene,
+        logo,
+        query,
+        path: pagePath,
+        name: appName,
+      });
+      this.appStack.push(miniApp);
+      wx.presentView(miniApp);
+    }
+  }
+
+  // 读取小程序App实例
+  static getAppById(appId: string) {
+    for (let idx = 0; idx < this.appStack.length; idx++) {
+      if (this.appStack[idx].appId === appId) {
+        return this.appStack[idx];
+      }
+    }
+    return null;
   }
   
   /**

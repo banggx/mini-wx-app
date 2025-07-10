@@ -26,26 +26,35 @@ export class Application {
   /**
    * 拉起小程序页面
    */
-  async presentView(view: MiniApp) {
+  async presentView(view: MiniApp, useCache = false) {
     if (!this.done) return;
     this.done = false;
 
+    const preView = this.views[this.views.length - 1];
     view.parent = this;
     view.el.style.zIndex = `${this.views.length + 1}`;
     // 初始化小程序为止: 将小程序为止调整到屏幕-1屏，再添加划入动画
     view.el.classList.add('wx-native-view--before-present');
     view.el.classList.add('wx-native-view--enter-anima');
-    this.window?.appendChild(view.el);
+    // 前一个页面推出
+    preView?.el.classList.add('wx-native-view--before-presenting');
+		preView?.el.classList.remove('wx-native-view--instage');
+		preView?.el.classList.add('wx-native-view--enter-anima');
+    view.onPresentIn();
+    !useCache && this.window?.appendChild(view.el);
     this.views.push(view);
-    view.viewDidLoad();
+    !useCache && view.viewDidLoad();
     await sleep(20);
     // 小程序入场: 调整小程序为止
+    preView?.el.classList.add('wx-native-view--presenting');
     view.el.classList.add('wx-native-view--instage');
     await sleep(540);
     this.done = true;
     // 移除初始化样式类
     view.el.classList.remove('wx-native-view--before-present');
     view.el.classList.remove('wx-native-view--enter-anima');
+    preView?.el.classList.remove('wx-native-view--enter-anima');
+		preView?.el.classList.remove('wx-native-view--before-presenting');
   }
   
   /**

@@ -51,10 +51,10 @@ Page({
     });
   },
 
-  openJingdong() {
-    wx.navigateToMiniProgram({
-      appId: 'jingdong',
-      path: 'pages/home/index?params1=美团参数1&params2=美团参数2'
+  toast() {
+    wx.showToast({
+      icon: 'success',
+      title: '成功'
     });
   }
 });

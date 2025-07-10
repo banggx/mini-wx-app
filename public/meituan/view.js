@@ -53,6 +53,16 @@
         [_c("ui-text", [_vm._v("打开详情页")])],
         1
       ),
+      _vm._v(" "),
+      _c(
+        "ui-view",
+        {
+          staticClass: "home-go-detail",
+          attrs: { bindtap: { methodName: "toast", params: [] } },
+        },
+        [_c("ui-text", [_vm._v("toast")])],
+        1
+      ),
     ],
     1
   )
@@ -64,7 +74,7 @@ render._withStripped = true
         path: 'pages/home/index',
         render: render,
         usingComponents: {},
-        scopedId: 'data-v-er7AkF2xUN'
+        scopedId: 'data-v-gPw3AfAN77'
       });
     })
   
@@ -96,7 +106,7 @@ render._withStripped = true
         path: 'pages/detail/index',
         render: render,
         usingComponents: {},
-        scopedId: 'data-v-OQv0RlAB0C'
+        scopedId: 'data-v-bHZgJBs6W5'
       });
     })
   

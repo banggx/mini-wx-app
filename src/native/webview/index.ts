@@ -67,7 +67,7 @@ export class Webview {
   bindBackEvent() {
     const backBtn = this.el.querySelector('.wx-native-webview__navigation-left-btn') as HTMLElement;
     backBtn.onclick = () => {
-      console.log('点击返回按钮')
+      this.parent?.parent?.navigateBack();
     };
   }
 

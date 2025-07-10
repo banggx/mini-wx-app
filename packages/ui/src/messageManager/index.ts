@@ -21,6 +21,7 @@ class messageManager {
     this.message.receive('loadResource', this.loadResource.bind(this));
     this.message.receive('setInitialData', this.setInitialData.bind(this));
     this.message.receive('updateModule', this.updateModule.bind(this));
+    this.message.receive('showToast', this.showToast.bind(this))
   }
 
   private loadResource(data) {
@@ -45,6 +46,10 @@ class messageManager {
 
   updateModule(data) {
     runtimeManager.updateModule(data);
+  }
+
+  showToast(msg) {
+    window.wxComponentsApi.showToast(msg);
   }
 }
 

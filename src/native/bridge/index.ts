@@ -60,6 +60,10 @@ export class Bridge {
         break;
       case 'updateModule':
         this.updateModule(body); // 逻辑线程调用setData 更新数据，通知UI渲染
+        break;
+      case 'showToast':
+        this.showToast(body);
+        break;
     }
   }
 
@@ -219,6 +223,15 @@ export class Bridge {
     });
   }
 
+  destroy() {
+    this.jscore.postMessage({
+      type: 'pageUnload',
+      body: {
+        bridgeId: this.id,
+      }
+    })
+  }
+
   appShow() {
     if (this.status < 2) {
       return;
@@ -275,6 +288,16 @@ export class Bridge {
         id,
         methodName,
         paramsList
+      }
+    })
+  }
+
+  showToast(payload) {
+    const { params } = payload;
+    this.webview?.postMessage({
+      type: 'showToast',
+      body: {
+        ...params,
       }
     })
   }

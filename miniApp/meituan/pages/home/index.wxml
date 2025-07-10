@@ -12,4 +12,7 @@
   <view class="home-go-detail" bindtap="goDetail">
     <text>打开详情页</text>
   </view>
+  <view class="home-go-detail" bindtap="toast">
+    <text>toast</text>
+  </view>
 </view>
